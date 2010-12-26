@@ -17,26 +17,34 @@ public class BjThinker extends MIDlet {
 
     private Display display;
     private Command exit;
-
     private int[] dealer = new int[12];
     private int[] playAa = new int[12];
     private int[] playBb = new int[12];
     private int[] playCc = new int[12];
+    private String strDealer = "庄家";
+    private String strPlayAa = "玩A";
+    private String strPlayBb = "玩B";
+    private String strPlayCc = "玩C";
+    private int count = 0;
     private Vector deck = new Vector();
+    private int deckIndex = 0;
+    private StringBuffer sbDealer = new StringBuffer("hello, java!");
+    private int activeIndex = 1;
+    private int activeIndexPlus = 1;
+    private boolean isBat = true;
+    private StringBuffer consoleStr1line = new StringBuffer("");
+   //no use
 
-    private int deckIndex = 1;
-
-
-    private StringBuffer consoleStr1line = new StringBuffer("hello, java!");
-    private StringBuffer displayString = new StringBuffer("hello, java!");
+    private StringBuffer displayString = new StringBuffer("");
+    private StringBuffer sbPlaya = new StringBuffer("hello, java!");
+    private StringBuffer sbPlayb = new StringBuffer("hello, java!");
+    private StringBuffer sbPlayc = new StringBuffer("hello, java!");
     private StringBuffer batString = new StringBuffer("");
     private StringBuffer batStringEvenOdd = new StringBuffer("");
     private boolean ready4input = false;
-    private boolean isBat = false;
     private int[] diceArr = new int[3];
     private int index = 0;
-    private int count = 0;
-    private int screen = 170;
+    private int screen = 210;
     private boolean islight = false;
     private String charSep = "|";
     private String onString = "|开|";
@@ -82,60 +90,56 @@ public class BjThinker extends MIDlet {
         display = Display.getDisplay(this);
         Canvas canvas = new Canvas() { // anonymous class
 
-            private boolean isAuto = false;
+            private int tmpSumHolder;
 
             public void paint(Graphics graphics) {
-                consoleStr1line.delete(0, consoleStr1line.length());
-                consoleStr1line.append(ready4input ? onString : offString);
-                if (isAuto) {
-                    //consoleStr1line.append("  ").append(DataBaseRepository.strAuto);
-                }
+//                consoleStr1line.delete(0, consoleStr1line.length());
+                //              consoleStr1line.append(ready4input ? onString : offString);
+                //            if (isAuto) {
+                //consoleStr1line.append("  ").append(DataBaseRepository.strAuto);
+                //          }
 
 
-                for (int i = 0; i < diceArr.length; i++) {
-                    if (diceArr[i] != 0) {
-                        consoleStr1line.append(i == 0 ? "-" : "").append(diceArr[i]);
-                    }
-                }
-                //first fill
+                //        for (int i = 0; i < diceArr.length; i++) {
+                //          if (diceArr[i] != 0) {
+//                        consoleStr1line.append(i == 0 ? "-" : "").append(diceArr[i]);
+//                    }
+//                }
+//                //first fill
                 graphics.setColor(0, 0, 0);
                 graphics.fillRect(0, 0, 240, 320);
 
                 graphics.setColor(screen, screen, screen);
-                // graphics.setColor(255, 255, 255);
 
-                // graphics.drawLine(0, 15, 240, 15);
-                // graphics.drawLine(0, 59, 240, 59);
-                //graphics.drawLine(0, 89, 240, 89);
-                // graphics.drawLine(0, 119, 240, 119);
-                // graphics.drawLine(0, 164, 240, 164);
-                // graphics.drawLine(0, 194, 240, 194);
-                // makedispString();
-                // if(showZero){
-                //     tempStr = dispString.toString();
-                // }else{
-                //     tempStr = dispString.toString();
-                //     tempStr = tempStr.replace('0', ' ');
-                // }
-                //console
+                makeConsoleString0();
                 graphics.drawString(consoleStr1line.toString(), 0, 0, 0);
-                graphics.drawString(String.valueOf(count), 85, 0, 0);
-                if (isAuto) {
-                    graphics.drawString(String.valueOf("auto"), 119, 0, 0);
-                }
-                if (islight) {
-                    graphics.drawString(String.valueOf("light"), 150, 0, 0);
-                }
-                if (isBat) {
-                    graphics.drawString(String.valueOf("bat"), 160, 0, 0);
-                }
-                //the one of three
-                //  makeOneOtherString(bigString, smlString, DataBaseRepository.intBigDiff, DataBaseRepository.intSmallDiff, DataBaseRepository.intBig, DataBaseRepository.intSmall);
-                graphics.drawString(displayString.toString(), 0, 21, 0);
-                //  makeOneOtherString(evenString, oddString, DataBaseRepository.intEvenDiff, DataBaseRepository.intOddDiff, DataBaseRepository.intEven, DataBaseRepository.intOdd);
-                graphics.drawString(displayString.toString(), 0, 38, 0);
+
+                makeConsoleString();
+                graphics.drawString(consoleStr1line.toString(), 0, 17, 0);
+                //              graphics.drawString(String.valueOf(count), 85, 0, 0);
+//                if (isAuto) {
+//                    graphics.drawString(String.valueOf("auto"), 119, 0, 0);
+//                }
+//                if (islight) {
+//                    graphics.drawString(String.valueOf("light"), 150, 0, 0);
+//                }
+//                if (isBat) {
+//                    graphics.drawString(String.valueOf("bat"), 160, 0, 0);
+//                }
+//                //the one of three
+                makeOneHandString(dealer, strDealer);
+                graphics.drawString(sbDealer.toString(), 0, 37, 0);
+
+                makeOneHandString(playAa, strPlayAa);
+                graphics.drawString(sbDealer.toString(), 0, 54, 0);
                 // makeOneOtherString(threeString, doubleString, DataBaseRepository.anyThreeDiff, DataBaseRepository.anyDoubleDiff, DataBaseRepository.anyThree, DataBaseRepository.anyDouble);
-                graphics.drawString(displayString.toString(), 0, 55, 0);
+                makeOneHandString(playBb, strPlayBb);
+                graphics.drawString(sbDealer.toString(), 0, 71, 0);
+                // makeOneOtherString(threeString, doubleString, DataBaseRepository.anyThreeDiff, DataBaseRepository.anyDoubleDiff, DataBaseRepository.anyThree, DataBaseRepository.anyDouble);
+                makeOneHandString(playCc, strPlayCc);
+                graphics.drawString(sbDealer.toString(), 0, 88, 0);
+                // makeOneOtherString(threeString, doubleString, DataBaseRepository.anyThreeDiff, DataBaseRepository.anyDoubleDiff, DataBaseRepository.anyThree, DataBaseRepository.anyDouble);
+                // graphics.drawString(displayString.toString(), 0, 55, 0);
                 //end the three
 
                 // makeSum6SingleString(3);
@@ -186,6 +190,8 @@ public class BjThinker extends MIDlet {
                     }
                     if (isBat) {
                         batString.delete(0, batString.length());
+                        activeIndexPlus++;
+                        activeIndex = activeIndexPlus%4;
                         // batString.append("押大" + (++DataBaseRepository.amountBig));
                     }
                 }
@@ -215,27 +221,71 @@ public class BjThinker extends MIDlet {
                 }
 
                 if (keyCode == 55) {
-                    isAuto = !isAuto;
+                    //  isAuto = !isAuto;
                 }
 
                 if (keyCode == 42) { //boom start
-                    ready4input = !ready4input;
+                    shuffleCard();
+                    initDeal();
                 }
 
-                if (keyCode >= 49 && keyCode <= 54) {
+                if(keyCode==49){
+                    if(activeIndex==1){
+                        for(int j =1;j<12;j++){
+                           if(playAa[j]==0){
+                               playAa[j]= getOneCardFromDeck();
+                               break;
+                           }
+                        }
+                    }
+
+                    if(activeIndex==2){
+                        for(int j =1;j<12;j++){
+                           if(playBb[j]==0){
+                               playBb[j]= getOneCardFromDeck();
+                               break;
+                           }
+                        }
+                    }
+
+                    if(activeIndex==3){
+                        for(int j =1;j<12;j++){
+                           if(playCc[j]==0){
+                               playCc[j]= getOneCardFromDeck();
+                               break;
+                           }
+                        }
+                    }
+
+                    if(activeIndex==0){
+                        for(int j =1;j<12;j++){
+                           if(dealer[j]==0){
+                               dealer[j]= getOneCardFromDeck();
+                               break;
+                           }
+                        }
+                    }
+
+
+
+
+                }
+
+                if (keyCode >= 49 && keyCode <= 54 && 1==2) {
                     if (ready4input) {
                         if (index < 3) {
                             diceArr[index++] = keyCode - 48;
                         } else {
-                            transfer(diceArr, isBat);
+                           // transfer(diceArr, isBat);
                         }
                     }
                 }
 
                 if (keyCode == 35) {//#
-                    if (index == 3) {
-                        transfer(diceArr, isBat);
-                    }
+                  if(deck.size()<20){
+                      return;
+                  }
+                    initDeal();
                 }
                 if (keyCode == 48) {//0
                     shuffleCard();
@@ -244,12 +294,7 @@ public class BjThinker extends MIDlet {
                     batString.delete(0, batString.length());
                     batStringEvenOdd.delete(0, batStringEvenOdd.length());
 
-                    if (isAuto) {
-                        diceArr[0] = getOneDice();
-                        diceArr[1] = getOneDice();
-                        diceArr[2] = getOneDice();
-                        transfer(diceArr, isBat);
-                    }
+                  
                 }
                 repaint();
             }
@@ -281,41 +326,19 @@ public class BjThinker extends MIDlet {
                     batString.delete(0, batString.length());
                     batStringEvenOdd.delete(0, batStringEvenOdd.length());
 
-                    if (isAuto) {
-                        diceArr[0] = getOneDice();
-                        diceArr[1] = getOneDice();
-                        diceArr[2] = getOneDice();
-                        transfer(diceArr, isBat);
-                    }
+                  
                 }
                 repaint();
             }
 
-            private int getOneDice() {
-                int tmp = random.nextInt();
-                if (tmp >= 0) {
-                    return tmp % 6 + 1;
-                } else {
-                    tmp = -tmp;
-                    return tmp % 6 + 1;
-                }
-            }
+        
 
-            private void transfer(int[] diceArr, boolean isCalc) {
-                count++;
-                //ServiceHandle.getDiceArrAndCalc(diceArr, isCalc);
-
-                index = 0;
-                for (int i = 0; i < diceArr.length; i++) {
-                    diceArr[i] = 0;
-                }
-            }
-
+        
             private void clearEverything() {
                 consoleStr1line.delete(0, consoleStr1line.length());
                 displayString.delete(0, displayString.length());
                 ready4input = false;
-                isAuto = false;
+                //isAuto = false;
                 for (int i = 0; i < diceArr.length; i++) {
                     diceArr[i] = 0;
                 }
@@ -336,66 +359,9 @@ public class BjThinker extends MIDlet {
 //                        append(charSep).append(formatIntToString(DataBaseRepository.intSingle1ns, digit)).
 //                        append(charSep);
 //            }
-            //useful
-            private String formatIntToString(int argInt, int length) {
-                if (argInt == 0) {
-                    return "         ".substring(0, length);
-                }
-                String tmpStr = String.valueOf(argInt);
-                if (tmpStr.length() == length) {
-                    return tmpStr;
-                } else if (tmpStr.length() > length) {
-                    return tmpStr.substring(tmpStr.length() - length, tmpStr.length());
-                } else {
-                    while (tmpStr.length() < length) {
-                        tmpStr = " " + tmpStr;
-                    }
-                    return tmpStr;
-                }
-            }
+        
 
-            //useful
-            private void makeOneOtherString(String bigStringArg, String smlStringArg, int bigIntDiff, int smlIntDiff, int bigIntMore, int smlIntMore) {
-                int tmpContinueCount = 0;
-                int tmpMoreCount = 0;
-                displayString.delete(0, displayString.length());
-                // da lian 6
-                if (bigIntDiff > smlIntDiff) {
-                    tmpContinueCount = bigIntDiff - smlIntDiff;
-                    displayString.append(leftBlock).append(bigStringArg).append(rightBlock).append(continueString).append(tmpContinueCount);
-                } else if (bigIntDiff < smlIntDiff) {
-                    tmpContinueCount = smlIntDiff - bigIntDiff;
-                    displayString.append(leftBlock).append(smlStringArg).append(rightBlock).append(continueString).append(tmpContinueCount);
-                } else {
-                    tmpContinueCount = smlIntDiff - bigIntDiff;
-                    displayString.append(emptyString).append(tieString).append(tmpContinueCount);
-                }
-                displayString.append(emptyString);
-                // da duo 5
-                if (bigIntMore > smlIntMore) {
-                    tmpMoreCount = bigIntMore - smlIntMore;
-                    displayString.append(leftBlock).append(bigStringArg).append(rightBlock).append(moreString).append(tmpMoreCount);
-                } else if (bigIntMore < smlIntMore) {
-                    tmpMoreCount = smlIntMore - bigIntMore;
-                    displayString.append(leftBlock).append(smlStringArg).append(rightBlock).append(moreString).append(tmpMoreCount);
-                } else {
-                    tmpMoreCount = smlIntMore - bigIntMore;
-                    displayString.append(emptyString).append(tieString).append(tmpMoreCount);
-                }
-                displayString.append(emptyString);
-                // da ke ya [6][5]
-                if (bigIntDiff > smlIntDiff && bigIntMore > smlIntMore) {
-                    tmpContinueCount = bigIntDiff - smlIntDiff;
-                    tmpMoreCount = bigIntMore - smlIntMore;
-                    displayString.append(leftBlock).append(smlStringArg).append(rightBlock).append(canbetString).append(leftBlock).append(tmpContinueCount).append(rightBlock).append(leftBlock).append(tmpMoreCount).append(rightBlock);
-                } else if (bigIntDiff < smlIntDiff && bigIntMore < smlIntMore) {
-                    tmpContinueCount = smlIntDiff - bigIntDiff;
-                    tmpMoreCount = smlIntMore - bigIntMore;
-                    displayString.append(leftBlock).append(bigStringArg).append(rightBlock).append(canbetString).append(leftBlock).append(tmpContinueCount).append(rightBlock).append(leftBlock).append(tmpMoreCount).append(rightBlock);
-                } else {
-                    displayString.append(emptyString).append(canbetString).append(leftBlock).append(rightBlock).append(leftBlock).append(rightBlock);
-                }
-            }
+           
 
             private void shuffleCard() {
                 int[] card1 = new int[54 * 6];
@@ -425,9 +391,10 @@ public class BjThinker extends MIDlet {
 
                 //System.out.println("\n\n");
                 for (int i = 0; i < result.length; i++) {
-                    //	System.out.print(result[i] + "\t");
-                    //	if ((i + 1) % 10 == 0)
-                    //		System.out.println();
+                    System.out.print(result[i] + "\t");
+                    if ((i + 1) % 10 == 0) {
+                        System.out.println();
+                    }
                     deck.addElement(new Integer(result[i]));
                 }
 
@@ -436,13 +403,165 @@ public class BjThinker extends MIDlet {
 
                 //System.out.println("over");
 
-                //   for(int i=0;i<deck.size();i++){
+                //  for(int i=0;i<deck.size();i++){
                 //    System.out.println(deck.elementAt(i));
                 //deck.removeElementAt(0);
                 // System.out.println("deck.size():  "+deck.size());
                 //   }
                 //throw new UnsupportedOperationException("Not yet implemented");
             }
+
+            private void initDeal() {
+                playAa[1] = getOneCardFromDeck();
+                playBb[1] = getOneCardFromDeck();
+                playCc[1] = getOneCardFromDeck();
+                dealer[1] = getOneCardFromDeck();
+                playAa[2] = getOneCardFromDeck();
+                playBb[2] = getOneCardFromDeck();
+                playCc[2] = getOneCardFromDeck();
+
+                //throw new UnsupportedOperationException("Not yet implemented");
+            }
+
+            private int getOneCardFromDeck() {
+                int i = Integer.parseInt(deck.elementAt(deckIndex++).toString());
+                int result = i % 13;
+                return result == 0 ? 13 : result;
+                //throw new UnsupportedOperationException("Not yet implemented");
+            }
+
+            private void makeOneHandString(int[] dealerArg, String name) {
+                sbDealer.delete(0, sbDealer.length());
+                int i = calcSums(dealerArg);
+                //  formatArrayToString(dealerArg);
+                sbDealer.append(name).append(": [").append(i).append("]  ");
+                for (int j = 1; j < dealerArg.length; j++) {
+                    if (dealerArg[j] != 0) {
+
+                        if (dealerArg[j] < 11) {
+                            sbDealer.append("[" + dealerArg[j] + "]");
+                        } else if (dealerArg[j] == 11) {
+                            sbDealer.append("[J]");
+                        } else if (dealerArg[j] == 12) {
+                            sbDealer.append("[Q]");
+                        } else if (dealerArg[j] == 13) {
+                            sbDealer.append("[K]");
+                        } else if (dealerArg[j] == 0) {
+                            //sbDealer.append("[K]");
+                        } else {
+                            System.out.println("Never disp!");
+                        }
+                    }
+                }
+
+                // calcSums(dealer);
+
+                //throw new UnsupportedOperationException("Not yet implemented");
+            }
+
+            private int calcSums(int[] yiTuoPai) {
+                tmpSumHolder = 0;
+                yiTuoPai[0] = 0;
+                for (int i = 1; i < yiTuoPai.length; i++) {
+                    if (yiTuoPai[i] == 0) {
+                        continue;
+                    }
+                    switch (yiTuoPai[i]) {
+                        case 1:
+                            if (tmpSumHolder > 10) {
+                                tmpSumHolder += 1;
+                            } else {
+                                tmpSumHolder += 11;
+                                yiTuoPai[0] = yiTuoPai[0] + 1;
+                            }
+                            break;
+                        case 2:
+                            tmpSumHolder += 2;
+                            break;
+                        case 3:
+                            tmpSumHolder += 3;
+                            break;
+                        case 4:
+                            tmpSumHolder += 4;
+                            break;
+                        case 5:
+                            tmpSumHolder += 5;
+                            break;
+                        case 6:
+                            tmpSumHolder += 6;
+                            break;
+                        case 7:
+                            tmpSumHolder += 7;
+                            break;
+                        case 8:
+                            tmpSumHolder += 8;
+                            break;
+                        case 9:
+                            tmpSumHolder += 9;
+                            break;
+                        case 10:
+                            tmpSumHolder += 10;
+                            break;
+                        case 11:
+                            tmpSumHolder += 10;
+                            break;
+                        case 12:
+                            tmpSumHolder += 10;
+                            break;
+                        case 13:
+                            tmpSumHolder += 10;
+                            break;
+                        case 0:
+                            break;
+                        default:
+                            System.out.println("Never Display 016!");
+                            break;
+                    }// end switch
+                }// end for loop
+                while (tmpSumHolder > 21) {
+                    if (yiTuoPai[0] == 0) {
+                        break;
+                    } else {
+                        tmpSumHolder -= 10;
+                        yiTuoPai[0] = yiTuoPai[0] - 1;
+                    }
+                }// end while
+                return tmpSumHolder;
+            }
+
+            private void formatArrayToString(int[] arr) {
+                for (int i = 0; i < arr.length; i++) {
+                }
+
+
+                //throw new UnsupportedOperationException("Not yet implemented");
+            }
+
+            private void makeConsoleString0() {
+                consoleStr1line.delete(0, consoleStr1line.length());
+                consoleStr1line.append("1 要;2 停;3 分;4 服;5 双");
+
+                //throw new UnsupportedOperationException("Not yet implemented");
+            }
+            private void makeConsoleString() {
+                consoleStr1line.delete(0, consoleStr1line.length());
+                consoleStr1line.append("次: ").append(count);
+                consoleStr1line.append("     当前玩家: ");
+                if(activeIndex == 0){
+                    consoleStr1line.append(strDealer);
+                }else if(activeIndex == 1){
+                     consoleStr1line.append(strPlayAa);
+                }else if(activeIndex == 2){
+                     consoleStr1line.append(strPlayBb);
+                }else if(activeIndex == 3){
+                     consoleStr1line.append(strPlayCc);
+                }else{
+                    System.out.println("Never Disp!");
+                }
+
+                //throw new UnsupportedOperationException("Not yet implemented");
+            }
+
         }; // end of anonymous class
 
         exit = new Command("Exit", Command.STOP, 1);
