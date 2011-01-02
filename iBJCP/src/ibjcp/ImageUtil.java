@@ -1,7 +1,10 @@
 package ibjcp;
 
 import javax.microedition.lcdui.*;
-
+/**
+ * @author hubin
+ * hu.bin@msn.com
+ */
 public class ImageUtil {
 
     public static final int TURN_LEFT = 1;
@@ -21,7 +24,7 @@ public class ImageUtil {
         return image;
     }
 
-    public Image effect_resizeImage(Image src, int destW, int destH) {
+    public Image resizeImage(Image src, int destW, int destH) {
         int srcW = src.getWidth();
         int srcH = src.getHeight();
 
