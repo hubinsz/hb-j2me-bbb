@@ -63,9 +63,10 @@ public class Ibjcp extends MIDlet {
             private String strHit = "要";
             private String strSep = "|";
             //
-            private boolean isProduction = false;
+            private boolean isProduction = true;
             private boolean isImgLoaded = false;
             private boolean isDownCardShow = false;
+            private boolean isRsShow = false;
             private boolean isMoneyEditable = false;
             //
             private Image[] allDeckImgIntArr = new Image[54];
@@ -119,15 +120,16 @@ public class Ibjcp extends MIDlet {
                 drawOnePlayer(graphics, playCc, 60, 30, true);
                 drawOnePlayer(graphics, bufferArr, 220, 70, false);
 
-                makePossibleRs();
-                graphics.drawString("1", 0, 85, 0);
-                graphics.drawString("2", 0, 110, 0);
-                graphics.drawString("3", 0, 135, 0);
+                if (isRsShow) {
+                    makePossibleRs();
+                    graphics.drawString("1", 0, 85, 0);
+                    graphics.drawString("2", 0, 110, 0);
+                    graphics.drawString("3", 0, 135, 0);
 
-                drawPossibleRs(graphics, levelGoodArr, 85);
-                drawPossibleRs(graphics, levelCommArr, 110);
-                drawPossibleRs(graphics, levelBadArr, 135);
-
+                    drawPossibleRs(graphics, levelGoodArr, 85);
+                    drawPossibleRs(graphics, levelCommArr, 110);
+                    drawPossibleRs(graphics, levelBadArr, 135);
+                }
 
                 if (isDownCardShow) {
                     int tmpIndex = 0;
@@ -144,7 +146,7 @@ public class Ibjcp extends MIDlet {
             }//end paint method
 
             protected void keyPressed(int keyCode) {
-                if (keyCode == -8) { //right key, the left key is exit!
+                if (keyCode == -7) { //right key, the left key is exit!
                     isMoneyEditable = !isMoneyEditable;
                 }
                 if (keyCode == -1) { //key up
@@ -156,6 +158,7 @@ public class Ibjcp extends MIDlet {
                 if (keyCode == -4) { //key right
                 }
                 if (keyCode == 35) { //#
+                    isRsShow = !isRsShow;
                 }
                 if (keyCode == 42) { //*
                     isDownCardShow = !isDownCardShow;
@@ -327,6 +330,7 @@ public class Ibjcp extends MIDlet {
                 clearIntArray(playBb);
                 clearIntArray(playCc);
                 clearIntArray(dealer);
+                clearIntArray(bufferArr);
                 playAa[1] = getOneCardFromDeck();
                 playBb[1] = getOneCardFromDeck();
                 playCc[1] = getOneCardFromDeck();
