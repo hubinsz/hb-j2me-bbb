@@ -68,6 +68,7 @@ public class Ibjcp extends MIDlet {
             private boolean isDownCardShow = false;
             private boolean isRsShow = false;
             private boolean isMoneyEditable = false;
+            private boolean isOutCardShow = false;
             //
             private Image[] allDeckImgIntArr = new Image[54];
             private Image imageHolder;
@@ -76,6 +77,7 @@ public class Ibjcp extends MIDlet {
             private int[] levelGoodArr = new int[13];
             private int[] levelCommArr = new int[13];
             private int[] levelBadArr = new int[13];
+            private int[] outCardsArr = new int[13];
             //
             private int tmpIntHolder;
             private int deckOne2SixIdx = 0;
@@ -85,6 +87,7 @@ public class Ibjcp extends MIDlet {
             private int count = -1;
             //
             private StringBuffer displayString = new StringBuffer("");
+            private StringBuffer commSb = new StringBuffer("");
             private String errorStr;
 
             //this is the override method
@@ -132,21 +135,55 @@ public class Ibjcp extends MIDlet {
                 }
 
                 if (isDownCardShow) {
+                    parseDownCards();
                     int tmpIndex = 0;
                     tmpIndex = deckOne2SixIdx;
                     if (tmpIndex > 5 * 52) {
                         shuffleCard();
                     }
+                    graphics.drawString(commSb.toString(), 21, 204, 0);
                     for (int i = 0; i < 52; i++) {
                         int tmpInt = deckOne2Six[tmpIndex++];
                         tmpInt = tmpInt % 52 == 0 ? 52 : tmpInt % 52;
-                        graphics.drawImage(allDeckImgIntArr[tmpInt], (i % 13) * 18, 220 + (i / 13) * 22, 0);
+                        graphics.drawImage(allDeckImgIntArr[tmpInt], 3 + (i % 13) * 18, 228 + (i / 13) * 22, 0);
                     }
+                }
+
+                if (isOutCardShow) {
+                    int leftOffSet = 90;
+                    StringBuffer sb = new StringBuffer();
+                    clearIntArray(outCardsArr);
+                    for (int i = 0; i < deckOne2SixIdx; i++) {
+                        int tmpInt = deckOne2Six[i];
+                        tmpInt = tmpInt % 13 == 0 ? 13 : tmpInt % 13;
+                        outCardsArr[tmpInt - 1]++;
+                    }
+                    sb.delete(0, sb.length());
+                    sb.append(outCardsArr[0]);
+                    graphics.drawString(sb.toString(), leftOffSet, 110, 0);
+                    sb.delete(0, sb.length());
+                    for (int i = 0; i < 4; i++) {
+                        sb.append(outCardsArr[i + 1]);
+                        sb.append(" ");
+                    }
+                    graphics.drawString(sb.toString(), leftOffSet, 130, 0);
+                    sb.delete(0, sb.length());
+                    for (int i = 0; i < 4; i++) {
+                        sb.append(outCardsArr[i + 5]);
+                        sb.append(" ");
+                    }
+                    graphics.drawString(sb.toString(), leftOffSet, 150, 0);
+                    sb.delete(0, sb.length());
+                    for (int i = 0; i < 4; i++) {
+                        sb.append(outCardsArr[i + 9]);
+                        sb.append(" ");
+                    }
+                    graphics.drawString(sb.toString(), leftOffSet, 170, 0);
                 }
             }//end paint method
 
             protected void keyPressed(int keyCode) {
-                if (keyCode == -7) { //right key, the left key is exit!
+                if (keyCode == -7) { //right key, the left key is exit! //chagne 7 when deploy
                     isMoneyEditable = !isMoneyEditable;
                 }
                 if (keyCode == -1) { //key up
@@ -179,6 +216,7 @@ public class Ibjcp extends MIDlet {
                     }
                 }
                 if (keyCode == 51) { //3
+                    isOutCardShow = !isOutCardShow;
                 }
                 if (keyCode == 52) { //4
                     if (activeModel == 5) {
@@ -286,39 +324,47 @@ public class Ibjcp extends MIDlet {
                     sortedCards[i] = i + 1;
                 }
                 // this is for console show, comment it
+                /*
                 for (int i = 0; i < sortedCards.length; i++) {
-                    outPutMsg(sortedCards[i] + "\t", false);
-                    if ((i + 1) % 10 == 0) {
-                        outPutMsg("", true);
-                    }
+                outPutMsg(sortedCards[i] + "\t", false);
+                if ((i + 1) % 10 == 0) {
+                outPutMsg("", true);
                 }
+                }
+                 *
+                 */
 
                 // Random rand = new Random(System.currentTimeMillis());
                 Random random = new Random();
-
-                int randomIndex = 0;
-                int remainCardsCount = sortedCards.length;
-
-                for (int i = 0; i < sortedCards.length; i++) {
-                    randomIndex = Math.abs(random.nextInt() % remainCardsCount);
-                    randomCards[i] = sortedCards[randomIndex];
-                    sortedCards[randomIndex] = sortedCards[remainCardsCount - 1];
-                    remainCardsCount--;
-                }
-
-                for (int i = 0; i < 3; i++) {
-                    outPutMsg("", true);
-                }
-
-                // this is for console show, comment it
-                for (int i = 0; i < randomCards.length; i++) {
-                    outPutMsg(randomCards[i] % 13 + "\t", false);
-                    if ((i + 1) % 10 == 0) {
-                        outPutMsg("", true);
+                int shuffleTimes = 0;
+                shuffleTimes = Math.abs(random.nextInt() % 3) + 1;
+                //System.out.println(shuffleTimes);
+                for (int ii = 0; ii < shuffleTimes; ii++) {
+                    //System.out.println("wash one");
+                    int randomIndex = 0;
+                    int remainCardsCount = sortedCards.length;
+                    for (int i = 0; i < sortedCards.length; i++) {
+                        randomIndex = Math.abs(random.nextInt() % remainCardsCount);
+                        randomCards[i] = sortedCards[randomIndex];
+                        sortedCards[randomIndex] = sortedCards[remainCardsCount - 1];
+                        remainCardsCount--;
                     }
-
+                    copyIntArray(randomCards, sortedCards);
                 }
-
+                /*
+                for (int i = 0; i < 3; i++) {
+                outPutMsg("", true);
+                }
+                 */
+                // this is for console show, comment it
+                /*
+                for (int i = 0; i < randomCards.length; i++) {
+                outPutMsg(randomCards[i] % 13 + "\t", false);
+                if ((i + 1) % 10 == 0) {
+                outPutMsg("", true);
+                }
+                }
+                 */
                 clearIntArray(deckOne2Six);
                 copyIntArray(randomCards, deckOne2Six);
                 deckOne2SixIdx = 0;
@@ -424,14 +470,14 @@ public class Ibjcp extends MIDlet {
                     }//end for
 
                     int rs = calcBjSumsForIntArray(tmpArr);
-                    if (rs > 17 && rs < 22) {
+                    if (rs >= 17 && rs < 22) {
                         for (int i2 = 0; i2 < levelGoodArr.length; i2++) {
                             if (levelGoodArr[i2] == 0) {
                                 levelGoodArr[i2] = i;
                                 break;
                             }
                         }
-                    } else if (rs <= 17) {
+                    } else if (rs < 17) {
                         for (int i2 = 0; i2 < levelGoodArr.length; i2++) {
                             if (levelCommArr[i2] == 0) {
                                 levelCommArr[i2] = i;
@@ -579,6 +625,30 @@ public class Ibjcp extends MIDlet {
                         graphics.drawImage(allDeckImgIntArr[rsArr[i]], 15 + (j++) * 15, height, 0);
                     }
                 }
+            }
+
+            private void parseDownCards() {
+                int tmpIndex = 0;
+                int[] parseArray = new int[14];
+                tmpIndex = deckOne2SixIdx;
+                if (tmpIndex > 5 * 52) {
+                    shuffleCard();
+                }
+                for (int i = 0; i < 52; i++) {
+                    int tmpInt = deckOne2Six[tmpIndex++];
+                    tmpInt %= 13;
+                    parseArray[tmpInt]++;
+                }
+                commSb.delete(0, commSb.length());
+                for (int i = 1; i < 13; i++) {
+                    commSb.append(parseArray[i]);
+                    if (i == 1 || i == 9) {
+                        commSb.append("-");
+                    } else {
+                        commSb.append(" ");
+                    }
+                }
+                commSb.append(parseArray[0]);
             }
             // end utils ==================
         }; // end of anonymous class 
