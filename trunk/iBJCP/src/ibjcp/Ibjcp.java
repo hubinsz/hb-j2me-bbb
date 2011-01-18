@@ -207,6 +207,7 @@ public class Ibjcp extends MIDlet {
                     shuffleCard();
                 }
                 if (keyCode == 49) { //1
+                    calcLastRoundAndSetMoney();
                     startOneRound();
                     count++;
                 }
@@ -649,6 +650,56 @@ public class Ibjcp extends MIDlet {
                     }
                 }
                 commSb.append(parseArray[0]);
+            }
+
+            private void calcLastRoundAndSetMoney() {
+                int aa = calcBjSumsForIntArray(playAa);
+                int bb = calcBjSumsForIntArray(playBb);
+                int cc = calcBjSumsForIntArray(playCc);
+                int dl = calcBjSumsForIntArray(dealer);
+                if(aa>21 && bb>21 && cc>21){
+                    money-=6;
+                    return;
+                }
+                if(aa>21){
+                    money-=2;
+                }
+                if(bb>21){
+                    money-=2;
+                }
+                if(cc>21){
+                    money-=2;
+                }
+                if(dl>21){
+                    if(aa<22){
+                        money+=2;
+                    }
+                    if(bb<22){
+                        money+=2;
+                    }
+                    if(cc<22){
+                        money+=2;
+                    }
+                    return;
+                }
+                if(aa<22 && aa>dl){
+                    money+=2;
+                }
+                if(aa<22 && aa<dl){
+                    money-=2;
+                }
+                if(bb<22 && bb>dl){
+                    money+=2;
+                }
+                if(bb<22 && bb<dl){
+                    money-=2;
+                }
+                if(cc<22 && cc>dl){
+                    money+=2;
+                }
+                if(cc<22 && cc<dl){
+                    money-=2;
+                }
             }
             // end utils ==================
         }; // end of anonymous class 
